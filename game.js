@@ -104,7 +104,7 @@ function buildLevel(){
   World.set(20, 15, TT.LAMP);
   for(let i = 3; i < 30; i += 4) World.set(i, GY - 1, TT.MOSS);
   hints.push({ x: 6 * TILE, y: (GY - 5) * TILE, text:'A / D  HAREKET      W  ZIPLA' });
-  hints.push({ x: 22 * TILE, y: (GY - 6) * TILE, text:'SOL TIK / F  KILIÇ' });
+  hints.push({ x: 22 * TILE, y: (GY - 6) * TILE, text:'SPACE / SOL TIK  KILIÇ' });
   spawns.push({ type:'plant', x: 26 * TILE, y: (GY - 1) * TILE });
 
   /* ---------- B: vine wall (past-only climb) ---------- */
