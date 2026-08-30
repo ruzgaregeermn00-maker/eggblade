@@ -1,58 +1,63 @@
-# EGGBLADE
+# EGGRIFT
 
-A neon synthwave arcade slicing game. Swipe to cut flying eggs, dodge bombs, chain combos,
-and protect the Eggblade avatar hovering at the bottom of the grid.
+Boyutlar arasında geçiş yapan yumurta zırhlı şövalyenin 2D aksiyon platform oyunu.
 
-**Everything lives in `index.html`** — one self-contained page, no build step, no dependencies,
-no image or audio assets. Open the file in a browser (or serve the folder) and play.
+**Oyna:** https://ruzgaregeermn00-maker.github.io/eggblade/
 
-```
-python3 -m http.server 8000     # then visit http://localhost:8000
-```
+## Yarık mekaniği
 
-## What's in it
+Harita tek bir tilemap. Her karo hangi boyutta katı olduğunu kendisi biliyor, bu yüzden
+boyut değiştirmek tek bir değişkeni çevirmekten ibaret — seviye yeniden kurulmaz.
 
-**Rendering** — HTML5 Canvas, vanilla JS. Deep-space parallax starfield, drifting nebulae,
-a banded synth sun, and a scrolling perspective grid that pulses with the beat. Targets are
-vector eggs with gradient bodies, rim light, circuit facets and motion streaks; cut eggs split
-into two independently simulated halves with a molten cut edge. All glyphs are drawn as vectors,
-so nothing depends on a web font loading.
+| Karo | Geçmiş (yeşil) | Gelecek (camgöbeği) |
+| --- | --- | --- |
+| Sarmaşık | tırmanılır | çürümüş, boşluk |
+| Harabe | katı zemin | yıkılmış, geçilir |
+| Metal platform | hologram taslak | katı, enerjili |
+| Lazer | uyuyan yayıcı | öldürücü ışın |
 
-**Feel** — a tapered three-pass plasma blade trail that shifts hue with your active power-up,
-spark and shard bursts, expanding shockwave rings, floating `+score` popups, combo banners,
-screen shake on detonations, and a chromatic-aberration composite during slow-mo.
+Bu yüzden geçmişte harabeler yolu keser, gelecekte lazerler; koridoru geçmenin tek
+yolu ikisi arasında sırayla geçiş yapmak. Havadayken de geçiş yapılabilir, boşluk
+üzerindeki platform bölümü buna dayanır. Şövalye katı maddenin içine ışınlanamaz:
+geçiş önce birkaç piksel itmeyi dener, olmazsa reddedilir.
 
-**Gameplay** — eggs, golden eggs, bombs and three power-ups launch from below on real ballistic
-arcs, aimed so their apex lands in a comfortable slice band:
+## Kontroller
 
-| Power-up | Effect |
+| Tuş | İşlev |
 | --- | --- |
-| Slow-Mo (blue) | Drops the world to 0.4× with a chromatic-aberration filter |
-| Blade Storm (purple) | Auto-slices the nearest target ~11×/sec, bombs excluded |
-| Golden Slice (gold) | Triples every slice for its duration |
+| `A` `D` / `←` `→` | Hareket |
+| `W` / `↑` | Zıpla, duvar zıplaması |
+| `S` / `↓` | Tek yönlü platformdan in |
+| `SPACE` / Sol tık | Kılıç darbesi |
+| `SHIFT` / `E` | Boyut değiştir |
+| `ESC` / `P` | Duraklat · `M` sesi kapat |
 
-Chained slices raise a combo tier (2× → 3× → 4× → 5× → 8×) with escalating announcements;
-cutting several targets in one motion pays a ribbon bonus. Bombs and missed eggs each cost a heart.
+Dokunmatik cihazlarda ekran kontrolleri otomatik açılır.
 
-**Difficulty** — Easy / Normal / Hard / Extreme, each with its own launch speed, gravity, bomb
-rate, wave size, health pool and score multiplier, and each tracking a separate high score.
-Spawn pressure also ramps with time survived.
+## Yapı
 
-**Audio** — fully procedural Web Audio: filtered-noise blade swooshes, a glass impact whose pitch
-climbs with your combo, a heavy bass detonation, chord chimes for power-ups and records, plus a
-generated synthwave loop (bass, arp, pad) over a four-bar minor progression. Compressed master bus,
-separate SFX and music gains, toggleable.
+| Dosya | İçerik |
+| --- | --- |
+| `index.html` | Sayfa iskeleti, menüler, dokunmatik pad |
+| `style.css` | Çerçeve, overlay'ler, 16:9 letterbox |
+| `physics.js` | Tilemap dünyası, çift boyutlu çarpışma, duvar teması |
+| `renderer.js` | Prosedürel tileset, parallax gökyüzü, karakterler, HUD, yarık efekti |
+| `audio.js` | Web Audio ile sentezlenen ses efektleri |
+| `game.js` | Seviye, düşmanlar, boss, HUD mantığı, oyun döngüsü |
 
-**Localization** — complete TR/EN engine, switchable at any time from the top bar; the choice
-persists.
+Hiç görsel veya ses dosyası yok — her piksel ve her ses çalışma anında üretiliyor,
+bu yüzden GitHub Pages'te 404 verebilecek hiçbir varlık bağlantısı bulunmuyor.
+Sahne 480×270'lik bir tampona çizilip CSS ile `image-rendering: pixelated`
+büyütülüyor; pixel-art görünümü buradan geliyor.
 
-**Mobile** — fullscreen, safe-area aware, scroll and gesture locked, DPR-aware canvas up to 2.75×,
-glassmorphic HUD. An adaptive quality guard watches frame time and sheds the expensive composite
-passes on weak devices instead of dropping frames.
+Fizik sabit 60 Hz adımlarla, çizim ekran tazeleme hızında çalışır — yüksek Hz
+ekranlarda oyun hızlanmaz.
 
-Settings, difficulty choice, language and per-mode high scores persist in `localStorage`
-(and degrade gracefully to defaults when storage is unavailable, e.g. private browsing).
+## Bölüm
 
-## Controls
+Varış → sarmaşık duvarı (geçmiş tırmanışı) → havada boyut değiştirme boşluğu →
+lazer/harabe koridoru → duvar zıplama kuyusu → **Yarık Muhafızı**.
 
-Swipe or drag to slice. `Esc` / `P` pauses, `Space` starts from the menu.
+Muhafızın saldırıları oyuncunun bulunduğu boyuta göre değişir: geçmişte yer çarpması
+ve spor yaylımı, gelecekte lazer süpürme ve drone çağırma. Zırhı her döngüde açılır;
+hasar sadece çekirdek açıkken geçer.
