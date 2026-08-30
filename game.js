@@ -103,8 +103,8 @@ function buildLevel(){
   World.set(9, GY - 1, TT.LAMP);
   World.set(20, 15, TT.LAMP);
   for(let i = 3; i < 30; i += 4) World.set(i, GY - 1, TT.MOSS);
-  hints.push({ x: 6 * TILE, y: (GY - 5) * TILE, text:'A / D  HAREKET      W  ZIPLA' });
-  hints.push({ x: 22 * TILE, y: (GY - 6) * TILE, text:'SPACE / SOL TIK  KILIÇ' });
+  hints.push({ x: 6 * TILE, y: (GY - 5) * TILE, text:'A / D ile yürü · W ile zıpla' });
+  hints.push({ x: 22 * TILE, y: (GY - 6) * TILE, text:'Space veya sol tık: kılıç' });
   spawns.push({ type:'plant', x: 26 * TILE, y: (GY - 1) * TILE });
 
   /* ---------- B: vine wall (past-only climb) ---------- */
@@ -114,8 +114,8 @@ function buildLevel(){
   World.set(39, 7, TT.LAMP);
   LB.rect(43, 11, 4, 1, TT.PLAT);
   LB.rect(48, 14, 5, 1, TT.STONE);
-  hints.push({ x: 32 * TILE, y: (GY - 6) * TILE, text:'SARMAŞIK SADECE GEÇMİŞTE TIRMANILIR' });
-  hints.push({ x: 40 * TILE, y: 5 * TILE, text:'DUVARDA W: DUVAR ZIPLAMASI' });
+  hints.push({ x: 32 * TILE, y: (GY - 6) * TILE, text:'Sarmaşık yalnızca geçmişte tırmanılır' });
+  hints.push({ x: 40 * TILE, y: 5 * TILE, text:'Duvara yaslanıp W: duvar zıplaması' });
   spawns.push({ type:'plant', x: 45 * TILE, y: 10 * TILE });
 
   /* ---------- C: the shifting gap ---------- */
@@ -128,7 +128,7 @@ function buildLevel(){
   LB.rect(71, 14, 3, 1, TT.TECH);
   LB.rect(75, 17, 3, 1, TT.RUIN);
   World.set(56, GY - 1, TT.LAMP);
-  hints.push({ x: 55 * TILE, y: (GY - 6) * TILE, text:'E / SHIFT: BOYUT DEĞİŞTİR — HAVADA DA ÇALIŞIR' });
+  hints.push({ x: 55 * TILE, y: (GY - 6) * TILE, text:'E veya Shift: boyut değiştir — havada da çalışır' });
 
   /* ---------- D: laser corridor (alternate or die) ---------- */
   checkpoints.push({ x: 84 * TILE, y: (GY - 3) * TILE });
@@ -137,7 +137,7 @@ function buildLevel(){
   for(const rx of [91, 97, 103]) LB.rect(rx, 18, 1, GY - 18, TT.RUIN);
   World.set(86, 18, TT.LAMP);
   World.set(110, 18, TT.LAMP);
-  hints.push({ x: 85 * TILE, y: 19 * TILE, text:'GEÇMİŞTE LAZER YOK · GELECEKTE HARABE YOK' });
+  hints.push({ x: 85 * TILE, y: 19 * TILE, text:'Geçmişte lazer yok, gelecekte harabe yok' });
   spawns.push({ type:'drone', x: 116 * TILE, y: 17 * TILE });
 
   /* ---------- E: descent and the wall-jump shaft ---------- */
@@ -154,7 +154,7 @@ function buildLevel(){
   World.set(139, 24, TT.LAMP);
   spawns.push({ type:'drone', x: 123 * TILE, y: 18 * TILE });
   spawns.push({ type:'plant', x: 133 * TILE, y: 20 * TILE });
-  hints.push({ x: 138 * TILE, y: 20 * TILE, text:'DUVARA YASLAN, W İLE SEK' });
+  hints.push({ x: 138 * TILE, y: 20 * TILE, text:'Duvara yaslan, W ile sek' });
 
   /* ---------- F: guardian arena ---------- */
   checkpoints.push({ x: 158 * TILE, y: (GY - 3) * TILE });
@@ -165,9 +165,17 @@ function buildLevel(){
   for(const lx of [162, 172, 182, 192, 202]) World.set(lx, GY - 1, TT.MOSS);
   World.set(160, GY - 2, TT.LAMP);
   World.set(203, GY - 2, TT.LAMP);
-  hints.push({ x: 159 * TILE, y: (GY - 6) * TILE, text:'MUHAFIZ ÇEKİRDEĞİ AÇILINCA VUR' });
+  hints.push({ x: 159 * TILE, y: (GY - 6) * TILE, text:'Muhafızın çekirdeği açılınca vur' });
+
+  /* Rift shards: optional collectibles, several tucked behind a shift. */
+  const shards = [
+    [13, 17], [20, 14], [34, 12], [44, 9],
+    [61, 12], [69, 12], [89, 19], [102, 19],
+    [127, 17], [139, 13], [146, 10], [174, 11]
+  ].map(([tx, ty]) => ({ x: tx * TILE + 4, y: ty * TILE + 4 }));
 
   return {
+    shards,
     playerSpawn: { x: 6 * TILE, y: (GY - 4) * TILE },
     bossSpawn:   { x: 192 * TILE, y: (GY - 4) * TILE },
     bossTrigger: 162 * TILE,
@@ -205,8 +213,29 @@ function makeBoss(x, y){
            phase:1, state:'idle', stateT:1.2, telegraphT:0, vulnT:0,
            attackName:'', seed:++seedCounter, dead:false, active:false };
 }
+function makeShard(x, y){
+  return { kind:'shard', x, y, w:8, h:8, vy:0, bob:rand(0, 6.28), taken:false, grounded:true };
+}
+function makeHeart(x, y){
+  return { kind:'heart', x, y, w:8, h:8, vy:-120, vx:rand(-40, 40), bob:rand(0, 6.28),
+           taken:false, grounded:false, life:0 };
+}
 function makeProjectile(x, y, vx, vy, kind, dim, dmg, grav){
   return { x, y, w:5, h:5, vx, vy, kind, dim, dmg, grav: grav || 0, life:0, max:4, dead:false };
+}
+
+/* --------------------------------------------------------------- storage */
+const SAVE_KEY = 'eggrift.save.v1';
+function loadSave(){
+  try{ return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; }
+  catch(e){ return {}; }          // private mode / corrupt data: just play on
+}
+function storeSave(rec){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(rec)); }catch(e){}
+}
+function fmtTime(sec){
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
 
 /* ------------------------------------------------------------------ game */
@@ -223,7 +252,8 @@ const Game = {
   hpShown:100, hpGhost:100,
   beamT:0, beamY:0, beamDir:1,
   fps:60, fpsAcc:0, fpsN:0, fpsT:0,
-  kills:0, shifts:0, runTime:0,
+  kills:0, shifts:0, runTime:0, deaths:0,
+  pickups:[], shards:0, save:{},
 
   init(){
     const canvas = document.getElementById('screen');
@@ -232,6 +262,14 @@ const Game = {
     this.level = buildLevel();
     this.reset();
     this.showOverlay('ovTitle');
+
+    this.save = loadSave();
+    this.refreshBestLine();
+    const soundBtns = ['btnSound', 'btnSound2'].map(id => document.getElementById(id));
+    const syncSound = () => soundBtns.forEach(b => { if(b) b.textContent = `Ses: ${Sfx.muted ? 'kapalı' : 'açık'}`; });
+    soundBtns.forEach(b => { if(b) b.onclick = () => { Sfx.init(); Sfx.setMuted(!Sfx.muted); syncSound(); }; });
+    this.syncSound = syncSound;
+    syncSound();
 
     document.getElementById('btnStart').onclick = () => this.start();
     document.getElementById('btnResume').onclick = () => this.togglePause();
@@ -256,12 +294,21 @@ const Game = {
     this.warpT = 0; this.shiftCd = 0; this.shiftBlockT = 0;
     this.hpShown = this.hpGhost = 100;
     this.beamT = 0;
-    this.kills = 0; this.shifts = 0; this.runTime = 0;
+    this.kills = 0; this.shifts = 0; this.runTime = 0; this.deaths = 0;
+    this.pickups = L.shards.map(s => makeShard(s.x, s.y));
+    this.shards = 0;
     R.cam.x = clamp(this.player.x - VIEW_W / 2, 0, COLS * TILE - VIEW_W);
     R.cam.y = clamp(this.player.y - VIEW_H / 2, 0, ROWS * TILE - VIEW_H);
     R.cam.shake = 0;
   },
 
+  refreshBestLine(){
+    const el = document.getElementById('bestLine');
+    if(!el) return;
+    el.textContent = this.save.bestTime
+      ? `En iyi: ${fmtTime(this.save.bestTime)} · ${this.save.bestShards || 0}/12 yarık kırığı`
+      : '';
+  },
   showOverlay(id){
     for(const el of document.querySelectorAll('.overlay')) el.classList.toggle('on', el.id === id);
   },
@@ -274,6 +321,10 @@ const Game = {
   togglePause(){
     if(this.state === 'play'){ this.state = 'pause'; this.showOverlay('ovPause'); }
     else if(this.state === 'pause'){ this.state = 'play'; this.showOverlay(null); }
+    if(this.state === 'pause'){
+      const el = document.getElementById('pauseStats');
+      if(el) el.textContent = `Süre ${fmtTime(this.runTime)} · ${this.shards}/12 kırık · ${this.kills} düşman`;
+    }
   },
   respawn(){
     const p = this.player;
@@ -353,6 +404,7 @@ const Game = {
     this.burst(p.x + p.w / 2, p.y + p.h / 2, '#ff6b6b', 12);
     if(p.hp <= 0){
       p.hp = 0; p.dead = true;
+      this.deaths++;
       this.state = 'dead';
       Sfx.die();
       this.burst(p.x + p.w / 2, p.y + p.h / 2, '#ffd0d0', 30);
@@ -386,6 +438,7 @@ const Game = {
     this.updateEnemies(dt);
     this.updateBoss(dt);
     this.updateProjectiles(dt);
+    this.updatePickups(dt);
     this.updateParticles(dt);
     this.updateCamera(dt);
     this.updateHud(dt);
@@ -514,6 +567,7 @@ const Game = {
         if(e.hp <= 0){
           e.dead = true;
           this.kills++;
+          if(Math.random() < .35) this.pickups.push(makeHeart(e.x + e.w / 2 - 4, e.y + e.h / 2));
           Sfx.kill();
           this.burst(e.x + e.w / 2, e.y + e.h / 2, e.type === 'plant' ? '#7cc44a' : '#ff8ba0', 20);
         }
@@ -561,8 +615,18 @@ const Game = {
     setTimeout(() => {
       if(this.state !== 'play') return;
       this.state = 'win';
+      const prevT = this.save.bestTime, prevS = this.save.bestShards || 0;
+      const recordTime = !prevT || this.runTime < prevT;
+      const recordShards = this.shards > prevS;
+      this.save.bestTime = recordTime ? this.runTime : prevT;
+      this.save.bestShards = Math.max(prevS, this.shards);
+      this.save.runs = (this.save.runs || 0) + 1;
+      storeSave(this.save);
+      this.refreshBestLine();
+      const flag = recordTime ? '  ★ yeni rekor' : '';
       document.getElementById('winStats').textContent =
-        `Süre ${this.runTime.toFixed(1)}s · ${this.kills} düşman · ${this.shifts} yarık geçişi`;
+        `Süre ${fmtTime(this.runTime)}${flag} · ${this.shards}/12 yarık kırığı · ` +
+        `${this.kills} düşman · ${this.shifts} geçiş · ${this.deaths} ölüm`;
       this.showOverlay('ovWin');
     }, 1100);
   },
@@ -778,6 +842,39 @@ const Game = {
     this.projectiles = this.projectiles.filter(pr => !pr.dead);
   },
 
+  updatePickups(dt){
+    const p = this.player;
+    for(const q of this.pickups){
+      if(q.taken) continue;
+      q.bob += dt * 3;
+      if(!q.grounded){
+        q.life += dt;
+        q.vy += 620 * dt;
+        q.x += (q.vx || 0) * dt;
+        q.y += q.vy * dt;
+        if(rectSolid(q.x, q.y, q.w, q.h, this.dim)){
+          q.y = Math.floor((q.y + q.h) / TILE) * TILE - q.h - .01;
+          q.vy = 0; q.vx = 0; q.grounded = true;
+        }
+        if(q.y > ROWS * TILE + 40) q.taken = true;
+      }
+      if(rectsOverlap(p, q) && !p.dead){
+        q.taken = true;
+        if(q.kind === 'shard'){
+          this.shards++;
+          Sfx.pickup();
+          this.burst(q.x + 4, q.y + 4, '#9ff2ff', 16, 120);
+        } else {
+          p.hp = Math.min(p.maxHp, p.hp + 25);
+          Sfx.checkpoint();
+          this.burst(q.x + 4, q.y + 4, '#7cffa8', 12, 110);
+        }
+      }
+    }
+    /* hearts are transient; shards stay until collected */
+    this.pickups = this.pickups.filter(q => !q.taken && !(q.kind === 'heart' && q.life > 12));
+  },
+
   updateParticles(dt){
     for(const q of this.particles){
       q.life += dt;
@@ -824,6 +921,7 @@ const Game = {
       if(e.type === 'plant') R.drawPlant(e, this.dim); else R.drawDrone(e, this.dim);
     }
     if(this.boss.active && !this.boss.dead) R.drawBoss(this.boss, this.dim);
+    for(const q of this.pickups) R.drawPickup(q, this.dim);
     for(const pr of this.projectiles) R.drawProjectile(pr, this.dim);
     if(!this.player.dead) R.drawPlayer(this.player, this.dim);
     R.drawParticles(this.particles);
@@ -897,7 +995,7 @@ const Game = {
     R.text(`${Math.ceil(this.hpShown)}`, bx + bw - 2, by - 1, '#dfe9d8', 8, 'right');
 
     /* dimension indicator */
-    const label = past ? 'GEÇMİŞ' : 'GELECEK';
+    const label = past ? 'Geçmiş' : 'Gelecek';
     x.fillStyle = accent;
     x.fillRect(bx, by + 12, 3, 8);
     R.text(label, bx + 7, by + 12, accent, 9);
@@ -914,7 +1012,7 @@ const Game = {
       const w = 200, bx2 = (VIEW_W - w) / 2, by2 = VIEW_H - 22;
       x.fillStyle = 'rgba(6,12,10,.72)';
       x.fillRect(bx2 - 2, by2 - 10, w + 4, 22);
-      R.text('YARIK MUHAFIZI', VIEW_W / 2, by2 - 10, '#ffd0f2', 8, 'center');
+      R.text('Yarık Muhafızı', VIEW_W / 2, by2 - 10, '#ffd0f2', 8, 'center');
       x.fillStyle = '#160a12';
       x.fillRect(bx2, by2, w, 7);
       const bg = x.createLinearGradient(bx2, 0, bx2 + w, 0);
@@ -922,7 +1020,7 @@ const Game = {
       x.fillStyle = bg;
       x.fillRect(bx2, by2, w * clamp(b.hp / b.maxHp, 0, 1), 7);
       if(b.vulnT > 0){
-        R.text('ÇEKİRDEK AÇIK', VIEW_W / 2, by2 + 9, '#ffe27a', 8, 'center');
+        R.text('Çekirdek açık', VIEW_W / 2, by2 + 9, '#ffe27a', 8, 'center');
       }
       for(let i = 1; i < 3; i++){ x.fillStyle = '#160a12'; x.fillRect(bx2 + w * i / 3, by2, 1, 7); }
     }
@@ -941,11 +1039,19 @@ const Game = {
     if(this.shiftBlockT > 0){
       x.save();
       x.globalAlpha = clamp(this.shiftBlockT / .4, 0, 1);
-      R.text('YARIK ENGELLENDİ — İÇERİDE KATI MADDE VAR', VIEW_W / 2, 70, '#ff8080', 9, 'center');
+      R.text('Yarık engellendi — içeride katı madde var', VIEW_W / 2, 70, '#ff8080', 9, 'center');
       x.restore();
     }
 
-    if(this.state === 'pause') R.text('DURAKLATILDI', VIEW_W / 2, VIEW_H / 2, '#dfe9d8', 12, 'center');
+    /* shard counter */
+    x.save();
+    x.fillStyle = 'rgba(6,12,10,.72)';
+    x.fillRect(132, 4, 52, 16);
+    x.strokeStyle = accentDim;
+    x.strokeRect(132.5, 4.5, 51, 15);
+    R.drawShardIcon(138, 8, this.time);
+    R.text(`${this.shards}/12`, 150, 8, '#9ff2ff', 9);
+    x.restore();
   },
 
   /* --------------------------------------------------------------- loop */
@@ -979,7 +1085,10 @@ const Game = {
     /* fps readout */
     this.fpsAcc += dt; this.fpsN++;
     if(this.fpsAcc >= .5){ this.fps = Math.round(this.fpsN / this.fpsAcc); this.fpsAcc = 0; this.fpsN = 0; }
-    if(this.state === 'play') R.text(`${this.fps} FPS`, VIEW_W - 4, 4, 'rgba(200,220,190,.35)', 8, 'right');
+    if(this.state === 'play'){
+      R.text(fmtTime(this.runTime), VIEW_W - 4, 4, 'rgba(200,220,190,.5)', 8, 'right');
+      R.text(`${this.fps} fps`, VIEW_W - 4, 14, 'rgba(200,220,190,.28)', 8, 'right');
+    }
   }
 };
 

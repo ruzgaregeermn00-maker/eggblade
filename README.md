@@ -21,6 +21,12 @@ yolu ikisi arasında sırayla geçiş yapmak. Havadayken de geçiş yapılabilir
 üzerindeki platform bölümü buna dayanır. Şövalye katı maddenin içine ışınlanamaz:
 geçiş önce birkaç piksel itmeyi dener, olmazsa reddedilir.
 
+## Toplananlar
+
+Seviyede 12 **yarık kırığı** saklı — bazıları yalnızca doğru boyutta ulaşılabiliyor.
+Düşmanlar ölürken zaman zaman can küresi bırakıyor. En iyi süre ve toplanan kırık
+sayısı `localStorage`'a yazılıyor, başlangıç ekranında görünüyor.
+
 ## Kontroller
 
 | Tuş | İşlev |
@@ -39,6 +45,7 @@ Dokunmatik cihazlarda ekran kontrolleri otomatik açılır.
 | Dosya | İçerik |
 | --- | --- |
 | `index.html` | Sayfa iskeleti, menüler, dokunmatik pad |
+| `avatar.png` · `icon.png` | Yumurta şövalye portresi (profil fotoğrafı ve favicon) |
 | `style.css` | Çerçeve, overlay'ler, 16:9 letterbox |
 | `physics.js` | Tilemap dünyası, çift boyutlu çarpışma, duvar teması |
 | `renderer.js` | Prosedürel tileset, parallax gökyüzü, karakterler, HUD, yarık efekti |

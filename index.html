@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0e0a" />
 <meta name="description" content="Eggrift — boyutlar arasında geçiş yapan yumurta zırhlı şövalyenin 2D aksiyon platform oyunu." />
-<title>EGGRIFT</title>
+<title>Eggrift</title>
+<link rel="icon" type="image/png" href="./icon.png" />
+<link rel="apple-touch-icon" href="./avatar.png" />
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -15,41 +17,45 @@
   <!-- ===== overlays ===== -->
   <div class="overlay on" id="ovTitle">
     <div class="card">
-      <h1 class="logo">EGGRIFT</h1>
-      <p class="sub">BOYUT ŞÖVALYESİ</p>
+      <h1 class="logo">Eggrift</h1>
+      <p class="sub">Boyut Şövalyesi</p>
       <div class="keys">
         <div><b>A</b> <b>D</b> / <b>←</b> <b>→</b><span>Hareket</span></div>
-        <div><b>W</b> / <b>↑</b><span>Zıpla · Duvar zıplama</span></div>
+        <div><b>W</b> / <b>↑</b><span>Zıpla, duvar zıplaması</span></div>
         <div><b>S</b> / <b>↓</b><span>Platformdan in</span></div>
-        <div><b>SPACE</b> / <b>SOL TIK</b><span>Kılıç darbesi</span></div>
-        <div><b>SHIFT</b> / <b>E</b><span>Boyut değiştir</span></div>
+        <div><b>Space</b> / <b>Sol tık</b><span>Kılıç darbesi</span></div>
+        <div><b>Shift</b> / <b>E</b><span>Boyut değiştir</span></div>
       </div>
-      <button class="btn" id="btnStart">BAŞLA</button>
+      <p class="best" id="bestLine"></p>
+      <button class="btn" id="btnStart">Başla</button>
+      <button class="btn ghost" id="btnSound">Ses: açık</button>
       <p class="tip">Geçmişte sarmaşıklar tırmanılır, harabeler katıdır.<br />Gelecekte sarmaşıklar çürür, lazerler ve metal platformlar açılır.</p>
     </div>
   </div>
 
   <div class="overlay" id="ovPause">
     <div class="card">
-      <h2 class="ttl">DURAKLATILDI</h2>
-      <button class="btn" id="btnResume">DEVAM</button>
-      <button class="btn ghost" id="btnRestart">YENİDEN BAŞLA</button>
+      <h2 class="ttl">Duraklatıldı</h2>
+      <p class="tip" id="pauseStats"></p>
+      <button class="btn" id="btnResume">Devam</button>
+      <button class="btn ghost" id="btnSound2">Ses: açık</button>
+      <button class="btn ghost" id="btnRestart">Baştan başla</button>
     </div>
   </div>
 
   <div class="overlay" id="ovDead">
     <div class="card">
-      <h2 class="ttl bad">ÖLDÜN</h2>
+      <h2 class="ttl bad">Öldün</h2>
       <p class="tip" id="deadTip">Son kontrol noktasından devam ediyorsun.</p>
-      <button class="btn" id="btnRespawn">DEVAM ET</button>
+      <button class="btn" id="btnRespawn">Devam et</button>
     </div>
   </div>
 
   <div class="overlay" id="ovWin">
     <div class="card">
-      <h2 class="ttl good">YARIK KAPANDI</h2>
+      <h2 class="ttl good">Yarık kapandı</h2>
       <p class="tip" id="winStats">Muhafız düştü.</p>
-      <button class="btn" id="btnAgain">TEKRAR OYNA</button>
+      <button class="btn" id="btnAgain">Tekrar oyna</button>
     </div>
   </div>
 

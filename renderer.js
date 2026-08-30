@@ -832,6 +832,37 @@ const R = {
       b.vulnT > 0 ? .4 : .2);
   },
 
+  /** Rift shard: a slowly turning crystal that exists in both dimensions. */
+  drawPickup(q, dim){
+    const x = this.x;
+    const sx = Math.round(q.x - this.cam.x), sy = Math.round(q.y - this.cam.y + Math.sin(q.bob) * 2);
+    if(sx < -20 || sx > VIEW_W + 20) return;
+    if(q.kind === 'shard'){
+      const t = this.time * 2 + q.bob;
+      const w = 2 + Math.abs(Math.cos(t)) * 5;          // fake spin by squashing
+      px(x, sx + 4 - w / 2, sy, w, 8, '#37e6ff');
+      px(x, sx + 4 - w / 2, sy + 2, Math.max(1, w * .4), 4, '#d6fbff');
+      px(x, sx + 3, sy - 2, 2, 2, '#8ed24e');
+      this.addLight(q.x + 4, q.y + 4, 26, 'rgba(90,230,255,ALPHA)', .3);
+    } else {
+      const beat = .6 + .4 * Math.sin(this.time * 6 + q.bob);
+      px(x, sx + 1, sy + 1, 6, 5, '#ff5d7a');
+      px(x, sx, sy + 2, 8, 3, '#ff5d7a');
+      px(x, sx + 2, sy + 5, 4, 2, '#ff2b4a');
+      px(x, sx + 3, sy + 7, 2, 1, '#ff2b4a');
+      px(x, sx + 2, sy + 2, 2, 1, '#ffd0d8');
+      this.addLight(q.x + 4, q.y + 4, 22, 'rgba(255,90,120,ALPHA)', .18 + beat * .12);
+    }
+  },
+
+  /** Small crystal glyph for the HUD counter. */
+  drawShardIcon(ax, ay, t){
+    const x = this.x;
+    const w = 2 + Math.abs(Math.cos(t * 2)) * 4;
+    px(x, ax + 3 - w / 2, ay, w, 8, '#37e6ff');
+    px(x, ax + 3 - w / 2, ay + 2, Math.max(1, w * .4), 4, '#d6fbff');
+  },
+
   drawProjectile(pr, dim){
     const x = this.x;
     const sx = Math.round(pr.x - this.cam.x), sy = Math.round(pr.y - this.cam.y);
